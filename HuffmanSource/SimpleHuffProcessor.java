@@ -1,14 +1,14 @@
 /*  Student information for assignment:
  *
- *  On <MY|OUR> honor, <NAME1> and <NAME2), this programming assignment is <MY|OUR> own work
- *  and <I|WE> have not provided this code to any other student.
+ *  On our honor, Funke and <NAME2>, this programming assignment is our own work
+ *  and we have not provided this code to any other student.
  *
  *  Number of slip days used:
  *
- *  Student 1 (Student whose Canvas account is being used)
- *  UTEID:
- *  email address:
- *  Grader name:
+ *  Student 1 Funke
+ *  UTEID: jof369
+ *  email address: jof369@eid.utexas.edu
+ *  Grader name: Karnika Choudhury
  *
  *  Student 2
  *  UTEID:
