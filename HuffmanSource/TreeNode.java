@@ -79,9 +79,21 @@ public class TreeNode implements Comparable<TreeNode> {
      * Return a String version of this node.
      * @return A String version of this node including the frequency (weight) and value.
      */
-    public String toString() {
+    /*public String toString() {
         // consider values as characters for readability
         return "(" + frequency + ", " + (char) value + " as char, " + value + " value as int)";
+    }*/
+
+    public String toString(){
+        return "("+frequency+": {"+getAll()+"})";
+    }
+
+    public String getAll(){
+        if(isLeaf()){
+            return (char) value+"";
+        }else{
+            return left.getAll()+", "+right.getAll();
+        }
     }
 
     /**

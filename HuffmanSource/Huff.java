@@ -2,7 +2,7 @@ import javax.swing.UIManager;
 
 /**
  * Main/launch program for Huff assignment. A better
- * comment than this is warranted.
+ * comment than this is warranted. TODO TODO TODO TODO
  */
 public class Huff {
 
