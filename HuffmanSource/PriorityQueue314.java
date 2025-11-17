@@ -16,6 +16,7 @@ public class PriorityQueue314<E extends Comparable> {
     } 
 
     public boolean add(E newVal) {
+        //TODO GO TO OFFICE HOURS AND ASK ABOUT THIS UNSAFE CAST???
         if(size()==0||newVal.compareTo(queue.getLast())>=0){
             queue.addLast(newVal);
             return true;
@@ -31,8 +32,6 @@ public class PriorityQueue314<E extends Comparable> {
         return true;
     }
 
-
-    //TODO remove this toString
     public String toString(){
         return queue.toString();
     }

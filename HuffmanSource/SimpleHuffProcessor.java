@@ -19,11 +19,14 @@
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
 
 public class SimpleHuffProcessor implements IHuffProcessor {
 
     private IHuffViewer myViewer;
     private HuffmanTree huffTree;
+    private Integer format;
+    private int compressedSize;
 
     /**
      * Preprocess data so that compression is possible ---
@@ -33,10 +36,8 @@ public class SimpleHuffProcessor implements IHuffProcessor {
      * 
      * @param in           is the stream which could be subsequently compressed
      * @param headerFormat a constant from IHuffProcessor that determines what kind
-     *                     of
-     *                     header to use, standard count format, standard tree
-     *                     format, or
-     *                     possibly some format added in the future.
+     *                     of header to use, standard count format, standard tree
+     *                     format, or possibly some format added in the future.
      * @return number of bits saved by compression or some other measure
      *         Note, to determine the number of
      *         bits saved, the number of bits written includes
@@ -52,9 +53,17 @@ public class SimpleHuffProcessor implements IHuffProcessor {
         } else {
             bitStream = (BitInputStream) in;
         }
-
+        format = headerFormat;
         huffTree = new HuffmanTree(bitStream);
-        return huffTree.originalBitCount() - huffTree.getBitCount();
+        // TODO is this all good? Do the math and double check l8r
+        compressedSize = BITS_PER_INT * 2;
+        if (headerFormat == STORE_COUNTS) {
+            compressedSize += ALPH_SIZE * BITS_PER_WORD;
+        } else if (headerFormat == STORE_TREE) {
+            compressedSize += huffTree.numBitsToCompressTree();
+        }
+        compressedSize+=huffTree.getCompressionBitCount();
+        return huffTree.originalBitCount() - compressedSize;
     }
 
     /**
@@ -76,12 +85,35 @@ public class SimpleHuffProcessor implements IHuffProcessor {
      *                     writing to the output file.
      */
     public int compress(InputStream in, OutputStream out, boolean force) throws IOException {
-        //Step 1: Output stream out the header we made
-        out.write(MAGIC_NUMBER);
-        //Step 2: Output stream out the 
+        if (format.equals(0)) {
+            throw new IllegalStateException("Must call preprocessCompress before compress");
+        }
+        // Step 1: Output stream out the header we made
+        BitOutputStream bitOut = new BitOutputStream(out);
+        bitOut.writeBits(BITS_PER_INT, MAGIC_NUMBER);
+        bitOut.writeBits(BITS_PER_INT, format);
+        if (format == STORE_COUNTS) {
+            int[] frequencies = huffTree.getFrequencies();
+            for (int bite = 0; bite < ALPH_SIZE; bite++) {
+                bitOut.writeBits(BITS_PER_INT, frequencies[bite]);
+            }
+        } else if (format == STORE_TREE) {
+            huffTree.writeTree(bitOut);
+        }
 
-        throw new IOException("compress is not implemented");
-        // return 0;
+        // Step 2: Output stream out the compression
+
+        HashMap<Integer, BitList> compMap = huffTree.getCompressionMap();
+        int bite = in.read();
+        while (bite != -1) {
+            bitOut.writeBits(compMap.get(bite).getSize(), compMap.get(bite).toInt());
+            bite = in.read();
+        }
+        bitOut.writeBits(compMap.get(PSEUDO_EOF).getSize(), compMap.get(PSEUDO_EOF).toInt());
+
+        bitOut.close();
+        
+        return compressedSize;
     }
 
     /**
