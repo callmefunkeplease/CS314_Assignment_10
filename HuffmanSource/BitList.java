@@ -1,7 +1,7 @@
 import java.util.Iterator;
 
 public class BitList implements Iterable {
-    private int BITS_PER_BYTE;
+    private static final int BITS_PER_BYTE=8;
     private boolean[] myBits;
     private int size;
 
@@ -75,66 +75,6 @@ public class BitList implements Iterable {
         return sb.toString();
     }
 
-    public BitList and(BitList other) {
-        BitList newList = new BitList(this);
-        newList.size = Math.max(size, other.size);
-        newList.resize(other);
-        int curPos = 0;
-        while (curPos < other.size) {
-            if (!other.myBits[curPos]) {
-                newList.myBits[curPos] = false;
-            }
-            curPos++;
-        }
-        return newList;
-    }
-
-    public BitList or(BitList other) {
-        BitList newList = new BitList(this);
-        newList.size = Math.max(size, other.size);
-        newList.resize(other);
-        int curPos = 0;
-        while (curPos < other.size) {
-            if (other.myBits[curPos]) {
-                newList.myBits[curPos] = true;
-            }
-            curPos++;
-        }
-        return newList;
-    }
-
-    public BitList xor(BitList other) {
-        BitList newList = new BitList();
-        newList.size = Math.max(size, other.size);
-        if (other.myBits.length > myBits.length) {
-            newList.resize(other);
-        } else {
-            newList.resize(this);
-        }
-        int curPos = 0;
-        while (curPos < other.size) {
-            if (other.myBits[curPos] == myBits[curPos]) {
-                newList.myBits[curPos] = false;
-            } else {
-                newList.myBits[curPos] = true;
-            }
-            curPos++;
-        }
-        return newList;
-    }
-
-    public BitList not() {
-        BitList newList = new BitList();
-        newList.resize(this);
-        newList.size = size;
-        for (int i = 0; i < size; i++) {
-            if (!myBits[i]) {
-                newList.myBits[i] = true;
-            }
-        }
-        return newList;
-    }
-
     public void leftShift(int amount) {
         size += amount;
         resize();
@@ -155,12 +95,8 @@ public class BitList implements Iterable {
         }
     }
 
-    public void addFront(int bit) {
-        size++;
-        resize();
-        for (int i = size; i > 0; i--) {
-            myBits[i] = myBits[i - 1];
-        }
+    public void addRight(int bit) {
+        leftShift(1);
         if (bit == 1) {
             myBits[0] = true;
         } else {
@@ -168,7 +104,7 @@ public class BitList implements Iterable {
         }
     }
 
-    public void addBack(int bit) {
+    public void addLeft(int bit) {
         size++;
         resize();
         if (bit == 1) {
@@ -195,7 +131,7 @@ public class BitList implements Iterable {
     }
 
     private void resize() {
-        if (size > myBits.length) {
+        if (size >= myBits.length) {
             int length = myBits.length;
             while (length < size) {
                 length *= 2;
@@ -233,7 +169,5 @@ public class BitList implements Iterable {
                 return 0;
             }
         }
-
     }
-
 }

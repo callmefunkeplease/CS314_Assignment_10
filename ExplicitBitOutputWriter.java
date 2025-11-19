@@ -23,12 +23,13 @@ public class ExplicitBitOutputWriter {
             BitInputStream bitsIn = new BitInputStream(f);
             int bit = bitsIn.readBits(1);
             int count = 1;
+            int lineNum=1;
             while(bit != -1) {
                 System.out.print(bit);
                 if(count % 8 == 0 && count % 32 != 0)
                     System.out.print(" ");
                 else if(count % 32 == 0)
-                    System.out.println();
+                    System.out.println(" "+lineNum++);
                 count++;  
                 bit = bitsIn.readBits(1);
                 

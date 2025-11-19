@@ -21,12 +21,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 
+import javax.swing.JOptionPane;
+
 public class SimpleHuffProcessor implements IHuffProcessor {
 
     private IHuffViewer myViewer;
     private HuffmanTree huffTree;
     private Integer format;
     private int compressedSize;
+    private int[] frequencies;
 
     /**
      * Preprocess data so that compression is possible ---
@@ -54,16 +57,27 @@ public class SimpleHuffProcessor implements IHuffProcessor {
             bitStream = (BitInputStream) in;
         }
         format = headerFormat;
-        huffTree = new HuffmanTree(bitStream);
+        huffTree = new HuffmanTree(getFrequencies(bitStream));
         // TODO is this all good? Do the math and double check l8r
         compressedSize = BITS_PER_INT * 2;
         if (headerFormat == STORE_COUNTS) {
             compressedSize += ALPH_SIZE * BITS_PER_WORD;
         } else if (headerFormat == STORE_TREE) {
-            compressedSize += huffTree.numBitsToCompressTree();
+            compressedSize += BITS_PER_INT + huffTree.numBitsToCompressTree();
         }
-        compressedSize+=huffTree.getCompressionBitCount();
+        compressedSize += huffTree.getCompressionBitCount();
+        compressedSize += (BITS_PER_WORD - (compressedSize % BITS_PER_WORD));
         return huffTree.originalBitCount() - compressedSize;
+    }
+
+    private int[] getFrequencies(BitInputStream input) throws IOException {
+        frequencies = new int[ALPH_SIZE];
+        int bite = input.read();
+        while (bite != -1) {
+            frequencies[bite]++;
+            bite = input.read();
+        }
+        return frequencies;
     }
 
     /**
@@ -93,7 +107,6 @@ public class SimpleHuffProcessor implements IHuffProcessor {
         bitOut.writeBits(BITS_PER_INT, MAGIC_NUMBER);
         bitOut.writeBits(BITS_PER_INT, format);
         if (format == STORE_COUNTS) {
-            int[] frequencies = huffTree.getFrequencies();
             for (int bite = 0; bite < ALPH_SIZE; bite++) {
                 bitOut.writeBits(BITS_PER_INT, frequencies[bite]);
             }
@@ -102,17 +115,19 @@ public class SimpleHuffProcessor implements IHuffProcessor {
         }
 
         // Step 2: Output stream out the compression
-
         HashMap<Integer, BitList> compMap = huffTree.getCompressionMap();
-        int bite = in.read();
+        BitInputStream bitIn = new BitInputStream(in);
+        System.out.println(compMap);
+        int bite = bitIn.read();
         while (bite != -1) {
             bitOut.writeBits(compMap.get(bite).getSize(), compMap.get(bite).toInt());
-            bite = in.read();
+            bite = bitIn.read();
         }
         bitOut.writeBits(compMap.get(PSEUDO_EOF).getSize(), compMap.get(PSEUDO_EOF).toInt());
 
         bitOut.close();
-        
+        bitIn.close();
+
         return compressedSize;
     }
 
@@ -127,8 +142,34 @@ public class SimpleHuffProcessor implements IHuffProcessor {
      *                     writing to the output file.
      */
     public int uncompress(InputStream in, OutputStream out) throws IOException {
-        throw new IOException("uncompress not implemented");
-        // return 0;
+        BitInputStream bitIn = new BitInputStream(in);
+        BitOutputStream bitOut = new BitOutputStream(out);
+
+        if (bitIn.readBits(BITS_PER_INT) != MAGIC_NUMBER) {
+            // TODO go to office hours and ask about this
+            // viewer.showError("f");
+        }
+
+        int format = bitIn.readBits(BITS_PER_INT);
+        HuffmanTree sisterTree;
+        if (format == STORE_COUNTS) {
+            frequencies = new int[ALPH_SIZE];
+            for (int bite = 0; bite < ALPH_SIZE; bite++) {
+                frequencies[bite] = bitIn.readBits(BITS_PER_INT);
+            }
+            sisterTree = new HuffmanTree(frequencies);
+        } else if (format == STORE_TREE) {
+            sisterTree = new HuffmanTree(bitIn);
+        } else {
+            // because it's not a recognized format so it will write an empty file
+            return 0;
+        }
+        return sisterTree.uncompress(bitIn, bitOut);
+    }
+
+    private int uncompressTree(BitInputStream bitIn, BitOutputStream bitOut) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'uncompressTree'");
     }
 
     public void setViewer(IHuffViewer viewer) {

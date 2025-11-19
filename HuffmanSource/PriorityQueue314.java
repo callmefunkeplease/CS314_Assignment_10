@@ -32,6 +32,10 @@ public class PriorityQueue314<E extends Comparable> {
         return true;
     }
 
+    public E peek(){
+        return queue.getFirst();
+    }
+
     public String toString(){
         return queue.toString();
     }
