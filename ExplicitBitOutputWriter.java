@@ -32,7 +32,6 @@ public class ExplicitBitOutputWriter {
                     System.out.println(" "+lineNum++);
                 count++;  
                 bit = bitsIn.readBits(1);
-                
             }
             bitsIn.close();
         }

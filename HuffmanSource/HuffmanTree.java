@@ -43,10 +43,11 @@ public class HuffmanTree implements IHuffConstants {
             while (sizeLeft != 0) {
                 if (curBit == 1) {
                     // next is leaf
-                    TreeNode child = new TreeNode(bitIn.read(), -1);
+                    TreeNode child = new TreeNode(bitIn.readBits(BITS_PER_WORD+1), -1);
                     while(!giveChild(myNodes.peek(), child)){
                         myNodes.pop();
                     }
+                    System.out.println(child.getValue()+" ");
                     sizeLeft-=(BITS_PER_WORD+2);
                 }else{
                     //next is a branch
@@ -56,11 +57,26 @@ public class HuffmanTree implements IHuffConstants {
                     sizeLeft--;
                 }
                 curBit=bitIn.readBits(1);
+                System.out.print(curBit+" ");
             }
         } else {
             // root is a leaf
             root = new TreeNode(null, bitIn.readBits(BITS_PER_WORD), null);
             // We should end the program here
+        }
+        printTree();
+    }
+
+    
+    public void printTree() {
+        printTree(root, " ");
+    }
+
+    private void printTree(TreeNode n, String spaces) {
+        if (n != null) {
+            printTree(n.getRight(), spaces + "  ");
+            System.out.println(spaces + n.getValue());
+            printTree(n.getLeft(), spaces + "  ");
         }
     }
 
@@ -107,11 +123,22 @@ public class HuffmanTree implements IHuffConstants {
             out.writeBits(1, 1);
             // says what the data actually is.
             out.writeBits(BITS_PER_WORD + 1, curNode.getValue());
+            System.out.println("1 "+toBinary(curNode.getValue())+" ");
         } else {
             out.writeBits(1, 0);
+            System.out.print("0 ");
             writeTree(out, curNode.getLeft());
             writeTree(out, curNode.getRight());
         }
+    }
+
+    private String toBinary(int in){
+        String r="";
+        for(int i=0;i<9;i++){
+            r=in%2+r;
+            in/=2;
+        }
+        return r;
     }
 
     public HashMap<Integer, BitList> getCompressionMap() {
