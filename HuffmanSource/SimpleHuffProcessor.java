@@ -58,7 +58,6 @@ public class SimpleHuffProcessor implements IHuffProcessor {
         }
         format = headerFormat;
         huffTree = new HuffmanTree(getFrequencies(bitStream));
-        // TODO is this all good? Do the math and double check l8r
         compressedSize = BITS_PER_INT * 2;
         if (headerFormat == STORE_COUNTS) {
             compressedSize += ALPH_SIZE * BITS_PER_WORD;
@@ -117,7 +116,6 @@ public class SimpleHuffProcessor implements IHuffProcessor {
         // Step 2: Output stream out the compression
         HashMap<Integer, BitList> compMap = huffTree.getCompressionMap();
         BitInputStream bitIn = new BitInputStream(in);
-        System.out.println(compMap);
         int bite = bitIn.read();
         while (bite != -1) {
             bitOut.writeBits(compMap.get(bite).getSize(), compMap.get(bite).toInt());

@@ -85,15 +85,28 @@ public class TreeNode implements Comparable<TreeNode> {
     }*/
 
     public String toString(){
-        return "("+frequency+": {"+getAll()+"})";
+        return value+"";
+        //return "("+value+": {"+getAll()+"})";
     }
 
     public String getAll(){
+        
         if(isLeaf()){
-            return (char) value+"";
-        }else{
-            return left.getAll()+", "+right.getAll();
+            return value+"";
         }
+
+        String strToReturn="L: ";
+        if(left!=null){
+            strToReturn=strToReturn+left.getAll()+", R: ";
+        }else{
+            strToReturn=strToReturn+"null, R: ";
+        }
+        if(right!=null){
+            strToReturn=strToReturn+right.getAll();
+        }else{
+            strToReturn=strToReturn+"null";
+        }
+        return strToReturn;
     }
 
     /**

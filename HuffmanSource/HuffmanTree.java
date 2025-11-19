@@ -33,63 +33,49 @@ public class HuffmanTree implements IHuffConstants {
     }
 
     public HuffmanTree(BitInputStream bitIn) throws IOException {
+        int sizeLeft = bitIn.readBits(BITS_PER_INT);
         int curBit = bitIn.readBits(1);
         if (curBit == 0) {
             // root has 2 kids
-            int sizeLeft = bitIn.readBits(BITS_PER_INT);
             root = new TreeNode(-1, -1);
             Stack<TreeNode> myNodes = new Stack<>();
             myNodes.push(root);
+            sizeLeft--;
             while (sizeLeft != 0) {
+                curBit = bitIn.readBits(1);
+                TreeNode nextNode;
                 if (curBit == 1) {
                     // next is leaf
-                    TreeNode child = new TreeNode(bitIn.readBits(BITS_PER_WORD+1), -1);
-                    while(!giveChild(myNodes.peek(), child)){
-                        myNodes.pop();
-                    }
-                    System.out.println(child.getValue()+" ");
-                    sizeLeft-=(BITS_PER_WORD+2);
-                }else{
-                    //next is a branch
-                    TreeNode nextNode=new TreeNode(-1, -1);
-                    giveChild(myNodes.peek(), nextNode);
-                    myNodes.push(nextNode);
+                    nextNode = new TreeNode(bitIn.readBits(BITS_PER_WORD + 1), -1);
+                    sizeLeft -= (BITS_PER_WORD + 2);
+                } else {
+                    // next is a branch
+                    nextNode = new TreeNode(-1, -1);
                     sizeLeft--;
                 }
-                curBit=bitIn.readBits(1);
-                System.out.print(curBit+" ");
+                while (!giveChild(myNodes.peek(), nextNode)) {
+                    myNodes.pop();
+                }
+                if (curBit != 1) {
+                    myNodes.push(nextNode);
+                }
             }
         } else {
             // root is a leaf
             root = new TreeNode(null, bitIn.readBits(BITS_PER_WORD), null);
             // We should end the program here
         }
-        printTree();
-    }
-
-    
-    public void printTree() {
-        printTree(root, " ");
-    }
-
-    private void printTree(TreeNode n, String spaces) {
-        if (n != null) {
-            printTree(n.getRight(), spaces + "  ");
-            System.out.println(spaces + n.getValue());
-            printTree(n.getLeft(), spaces + "  ");
-        }
     }
 
     private boolean giveChild(TreeNode parent, TreeNode child) {
         if (parent.getLeft() == null) {
             parent.setLeft(child);
-            return true;
         } else if (parent.getRight() == null) {
             parent.setRight(child);
-            return true;
         } else {
             return false;
         }
+        return true;
     }
 
     public int numBitsToCompressTree() {
@@ -123,7 +109,7 @@ public class HuffmanTree implements IHuffConstants {
             out.writeBits(1, 1);
             // says what the data actually is.
             out.writeBits(BITS_PER_WORD + 1, curNode.getValue());
-            System.out.println("1 "+toBinary(curNode.getValue())+" ");
+            System.out.println("1 " + toBinary(curNode.getValue()) + " ");
         } else {
             out.writeBits(1, 0);
             System.out.print("0 ");
@@ -132,11 +118,11 @@ public class HuffmanTree implements IHuffConstants {
         }
     }
 
-    private String toBinary(int in){
-        String r="";
-        for(int i=0;i<9;i++){
-            r=in%2+r;
-            in/=2;
+    private String toBinary(int in) {
+        String r = "";
+        for (int i = 0; i < 9; i++) {
+            r = in % 2 + r;
+            in /= 2;
         }
         return r;
     }
@@ -170,6 +156,7 @@ public class HuffmanTree implements IHuffConstants {
                 if (curNode.getValue() != PSEUDO_EOF) {
                     bitOut.writeBits(BITS_PER_WORD, curNode.getValue());
                     curNode = root;
+                    bitsWritten+=BITS_PER_WORD;
                 } else {
                     return bitsWritten;
                 }
@@ -182,8 +169,8 @@ public class HuffmanTree implements IHuffConstants {
                 curBit = bitIn.readBits(1);
             }
         }
-        // TODO delete that system.out
-        System.out.println("YO YO YO AN ERROR HAPPENED WHEN WRITING BITS I NEVER SAW A PEOF! FIX THIS IMMEDIATELY");
+        //this happens in the 1/8 chance the PEOF *is* the last thing
         return bitsWritten;
     }
 }
+

@@ -1,7 +1,7 @@
 import java.util.Iterator;
 
 public class BitList implements Iterable {
-    private static final int BITS_PER_BYTE=8;
+    private static final int BITS_PER_BYTE = 8;
     private boolean[] myBits;
     private int size;
 
@@ -32,24 +32,24 @@ public class BitList implements Iterable {
         }
     }
 
-    public BitList(int input){
-        myBits=new boolean[BITS_PER_BYTE];
-        size=1;
-        int indexVal=2;
-        while(indexVal<=input){
+    public BitList(int input) {
+        myBits = new boolean[BITS_PER_BYTE];
+        size = 1;
+        int indexVal = 2;
+        while (indexVal <= input) {
             size++;
-            indexVal*=2;
+            indexVal *= 2;
         }
         resize();
-        int index=0;
-        while(input!=0){
-            myBits[index]=input%2==1;
+        int index = 0;
+        while (input != 0) {
+            myBits[index] = input % 2 == 1;
             index++;
-            input/=2;
+            input /= 2;
         }
     }
 
-    public int getSize(){
+    public int getSize() {
         return size;
     }
 
@@ -114,15 +114,15 @@ public class BitList implements Iterable {
         }
     }
 
-    public void removeFront(){
+    public void removeFront() {
         rightShift(1);
     }
 
-    public void removeBack(){
+    public void removeBack() {
         size--;
-        if(size<0){
-            size=0;
-            myBits=new boolean[BITS_PER_BYTE];
+        if (size < 0) {
+            size = 0;
+            myBits = new boolean[BITS_PER_BYTE];
         }
     }
 
@@ -137,7 +137,7 @@ public class BitList implements Iterable {
                 length *= 2;
             }
             boolean[] temp = new boolean[length];
-            for (int i = 0; i < size; i++) {
+            for (int i = 0; i < size && i < myBits.length; i++) {
                 temp[i] = myBits[i];
             }
             myBits = temp;
