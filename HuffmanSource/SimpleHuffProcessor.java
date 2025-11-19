@@ -98,6 +98,8 @@ public class SimpleHuffProcessor implements IHuffProcessor {
      *                     writing to the output file.
      */
     public int compress(InputStream in, OutputStream out, boolean force) throws IOException {
+        // TODO if !force then see if this thing actually expands instead of compress
+        // TODO and not force.
         if (format.equals(0)) {
             throw new IllegalStateException("Must call preprocessCompress before compress");
         }
@@ -163,11 +165,6 @@ public class SimpleHuffProcessor implements IHuffProcessor {
             return 0;
         }
         return sisterTree.uncompress(bitIn, bitOut);
-    }
-
-    private int uncompressTree(BitInputStream bitIn, BitOutputStream bitOut) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'uncompressTree'");
     }
 
     public void setViewer(IHuffViewer viewer) {

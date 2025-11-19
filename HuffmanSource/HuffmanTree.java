@@ -32,6 +32,8 @@ public class HuffmanTree implements IHuffConstants {
         root = queue.dequeue();
     }
 
+
+    //TODO comment the logic behind this method and implementation
     public HuffmanTree(BitInputStream bitIn) throws IOException {
         int sizeLeft = bitIn.readBits(BITS_PER_INT);
         int curBit = bitIn.readBits(1);
@@ -173,4 +175,3 @@ public class HuffmanTree implements IHuffConstants {
         return bitsWritten;
     }
 }
-
