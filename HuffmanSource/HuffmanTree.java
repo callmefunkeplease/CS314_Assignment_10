@@ -111,10 +111,8 @@ public class HuffmanTree implements IHuffConstants {
             out.writeBits(1, 1);
             // says what the data actually is.
             out.writeBits(BITS_PER_WORD + 1, curNode.getValue());
-            System.out.println("1 " + toBinary(curNode.getValue()) + " ");
         } else {
             out.writeBits(1, 0);
-            System.out.print("0 ");
             writeTree(out, curNode.getLeft());
             writeTree(out, curNode.getRight());
         }
