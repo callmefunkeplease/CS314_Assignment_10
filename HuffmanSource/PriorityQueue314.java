@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-public class PriorityQueue314<E extends Comparable> {
+public class PriorityQueue314<E extends Comparable<? super E>> {
     private static final int PERMUTATIONS_OF_A_BYTE = 256;
 
     private LinkedList<E> queue;
@@ -16,7 +16,6 @@ public class PriorityQueue314<E extends Comparable> {
     } 
 
     public boolean add(E newVal) {
-        //TODO GO TO OFFICE HOURS AND ASK ABOUT THIS UNSAFE CAST???
         if(size()==0||newVal.compareTo(queue.getLast())>=0){
             queue.addLast(newVal);
             return true;

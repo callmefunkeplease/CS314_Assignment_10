@@ -146,7 +146,6 @@ public class SimpleHuffProcessor implements IHuffProcessor {
         BitOutputStream bitOut = new BitOutputStream(out);
 
         if (bitIn.readBits(BITS_PER_INT) != MAGIC_NUMBER) {
-            // TODO go to office hours and ask about this
             myViewer.showError("Caution, never found huffman file identifier."
                     + " High chance to result in gibberish.");
         }
