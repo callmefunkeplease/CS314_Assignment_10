@@ -58,12 +58,11 @@ public class SimpleHuffProcessor implements IHuffProcessor {
         huffTree = new HuffmanTree(getFrequencies(bitStream));
         compressedSize = BITS_PER_INT * 2;
         if (headerFormat == STORE_COUNTS) {
-            compressedSize += ALPH_SIZE * BITS_PER_WORD;
+            compressedSize += ALPH_SIZE * BITS_PER_INT;
         } else if (headerFormat == STORE_TREE) {
             compressedSize += BITS_PER_INT + huffTree.numBitsToCompressTree();
         }
         compressedSize += huffTree.getCompressionBitCount();
-        compressedSize += (BITS_PER_WORD - (compressedSize % BITS_PER_WORD));
         return huffTree.originalBitCount() - compressedSize;
     }
 
