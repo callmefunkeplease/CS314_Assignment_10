@@ -124,7 +124,8 @@ public class SimpleHuffProcessor implements IHuffProcessor {
 
         bitOut.close();
         bitIn.close();
-
+        
+        System.out.println(compressedSize);
         return compressedSize;
     }
 
