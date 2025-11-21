@@ -95,10 +95,12 @@ public class SimpleHuffProcessor implements IHuffProcessor {
      *                     writing to the output file.
      */
     public int compress(InputStream in, OutputStream out, boolean force) throws IOException {
-        // TODO if !force then see if this thing actually expands instead of compress
-        // TODO and not force.
         if (format.equals(0)) {
             throw new IllegalStateException("Must call preprocessCompress before compress");
+        }
+        if (huffTree.originalBitCount() - compressedSize < 0 && !force) {
+            myViewer.showError("null");
+            return -1;
         }
         // Step 1: Output stream out the header we made
         BitOutputStream bitOut = new BitOutputStream(out);
@@ -124,8 +126,7 @@ public class SimpleHuffProcessor implements IHuffProcessor {
 
         bitOut.close();
         bitIn.close();
-        
-        System.out.println(compressedSize);
+
         return compressedSize;
     }
 
