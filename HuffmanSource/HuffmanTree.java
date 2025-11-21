@@ -1,3 +1,20 @@
+/*  Student information for assignment:
+ *
+ *  On our honor, Funke and Pranav, this programming assignment is our own work
+ *  and we have not provided this code to any other student.
+ *
+ *  Number of slip days used:
+ *
+ *  Student 1 Funke
+ *  UTEID: jof369
+ *  email address: jof369@eid.utexas.edu
+ *  Grader name: Karnika Choudhury
+ *
+ *  Student 2
+ *  UTEID: psp782
+ *  email address: psp782@my.utexas.edu
+ *
+ */
 
 import java.io.IOException;
 import java.util.HashMap;

@@ -1,6 +1,6 @@
 /*  Student information for assignment:
  *
- *  On our honor, Funke and <NAME2>, this programming assignment is our own work
+ *  On our honor, Funke and Pranav, this programming assignment is our own work
  *  and we have not provided this code to any other student.
  *
  *  Number of slip days used:
@@ -20,8 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
-
-import javax.swing.JOptionPane;
 
 public class SimpleHuffProcessor implements IHuffProcessor {
 
