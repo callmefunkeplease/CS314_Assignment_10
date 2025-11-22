@@ -1,1 +1,0 @@
-Big files with lots of repeating text had lots of compression whereas files with very little repetition weren't as compressed and it could also take more space to store the file as compressed compared to the original.

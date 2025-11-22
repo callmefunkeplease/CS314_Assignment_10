@@ -3,7 +3,7 @@
  *  On our honor, Funke and Pranav, this programming assignment is our own work
  *  and we have not provided this code to any other student.
  *
- *  Number of slip days used:
+ *  Number of slip days used: 1
  *
  *  Student 1 Funke
  *  UTEID: jof369
@@ -26,7 +26,16 @@ public class HuffmanTree implements IHuffConstants {
     private int numLeafs;
     private int numBits;
 
+    /*
+     * Creates a Huffman Tree given an array of frequencies.
+     * 
+     * @param frequencies; frequencies.length == ALPH_SIZE
+     */
     public HuffmanTree(int[] frequencies) throws IOException {
+        if (frequencies.length != ALPH_SIZE) {
+            throw new IllegalArgumentException("Violation of precon in HuffmanTree constructor. frequencies arr"
+                    + "ay is the wrong size");
+        }
         // PriorityQueue314 is a queue of treeNodes. You can only add treeNodes to it.
         PriorityQueue314<TreeNode> queue = new PriorityQueue314<>();
         for (int bite = 0; bite < ALPH_SIZE; bite++) {
@@ -49,14 +58,21 @@ public class HuffmanTree implements IHuffConstants {
         root = queue.dequeue();
     }
 
-
-    //TODO comment the logic behind this method and implementation
+    /*
+     * Constructs a huffman tree given a bitInputStream in which readBits(1) would
+     * return the 65th bit.
+     */
     public HuffmanTree(BitInputStream bitIn) throws IOException {
+        if (bitIn == null) {
+            throw new IllegalArgumentException("bitIn cannot be null");
+        }
         int sizeLeft = bitIn.readBits(BITS_PER_INT);
         int curBit = bitIn.readBits(1);
         if (curBit == 0) {
             // root has 2 kids
             root = new TreeNode(-1, -1);
+            // we use a treenode stack instead of recursion because we are familiar with
+            // recursion. This is for extra learning
             Stack<TreeNode> myNodes = new Stack<>();
             myNodes.push(root);
             sizeLeft--;
@@ -97,32 +113,51 @@ public class HuffmanTree implements IHuffConstants {
         return true;
     }
 
+    /*
+     * returns the number of bits that the tree part of the tree would take up
+     */
     public int numBitsToCompressTree() {
         return numBits;
     }
 
+    /*
+     * returns the number of bits the the data section of a compression would
+     * contain
+     */
     public int getCompressionBitCount() {
         return getBitCount(root, 0);
     }
 
     private int getBitCount(TreeNode curNode, int depth) {
+        if (curNode == null) {
+            throw new IllegalArgumentException("curNode cannot be null.");
+        }
         if (curNode.isLeaf()) {
             return depth * curNode.getFrequency();
         }
         return getBitCount(curNode.getLeft(), depth + 1) + getBitCount(curNode.getRight(), depth + 1);
     }
 
+    /*
+     * returns the number of bits in the original file
+     */
     public int originalBitCount() {
         // minus 1 for the added PEOF value
         return BITS_PER_WORD * (root.getFrequency() - 1);
     }
 
+    /*
+     * writes the to the output file the tree in the format of STF
+     */
     public void writeTree(BitOutputStream out) {
         out.writeBits(BITS_PER_INT, numBits);
         writeTree(out, root);
     }
 
     private void writeTree(BitOutputStream out, TreeNode curNode) {
+        if (out == null || curNode == null) {
+            throw new IllegalArgumentException("out and curNode cannot be null.");
+        }
         if (curNode.isLeaf()) {
             // says "this a leaf, boss!"
             out.writeBits(1, 1);
@@ -144,6 +179,11 @@ public class HuffmanTree implements IHuffConstants {
         return r;
     }
 
+    /*
+     * Returns a hashmap of Integers and BitLists such that an original byte is the
+     * Integer and the BitList is what the integer will be compressed down to, thus
+     * saving space.
+     */
     public HashMap<Integer, BitList> getCompressionMap() {
         HashMap<Integer, BitList> compressionMap = new HashMap<>();
         BitList b = new BitList();
@@ -164,7 +204,15 @@ public class HuffmanTree implements IHuffConstants {
         }
     }
 
+    /*
+     * given a bitInputStream that is compressed, it reads the tree and writes to a
+     * bitOutputStream the uncompressed data that the bits in the bitInputStream
+     * represent.
+     */
     public int uncompress(BitInputStream bitIn, BitOutputStream bitOut) throws IOException {
+        if (bitIn == null || bitOut == null) {
+            throw new IllegalArgumentException("bitIn and bitOut cannot be null.");
+        }
         TreeNode curNode = root;
         int curBit = bitIn.readBits(1);
         int bitsWritten = 0;
@@ -173,7 +221,7 @@ public class HuffmanTree implements IHuffConstants {
                 if (curNode.getValue() != PSEUDO_EOF) {
                     bitOut.writeBits(BITS_PER_WORD, curNode.getValue());
                     curNode = root;
-                    bitsWritten+=BITS_PER_WORD;
+                    bitsWritten += BITS_PER_WORD;
                 } else {
                     return bitsWritten;
                 }
@@ -186,7 +234,7 @@ public class HuffmanTree implements IHuffConstants {
                 curBit = bitIn.readBits(1);
             }
         }
-        //this happens in the 1/8 chance the PEOF *is* the last thing
+        // this happens in the 1/8 chance the PEOF *is* the last thing
         return bitsWritten;
     }
 }

@@ -3,7 +3,7 @@
  *  On our honor, Funke and Pranav, this programming assignment is our own work
  *  and we have not provided this code to any other student.
  *
- *  Number of slip days used:
+ *  Number of slip days used: 1
  *
  *  Student 1 Funke
  *  UTEID: jof369
@@ -166,6 +166,10 @@ public class SimpleHuffProcessor implements IHuffProcessor {
         return sisterTree.uncompress(bitIn, bitOut);
     }
 
+    /*
+     * Sets myViewer as the viewer the user gives so that the simpleHuffProcessor
+     * can display any errors.
+     */
     public void setViewer(IHuffViewer viewer) {
         myViewer = viewer;
     }

@@ -1,8 +1,17 @@
 import javax.swing.UIManager;
 
 /**
- * Main/launch program for Huff assignment. A better
- * comment than this is warranted. TODO TODO TODO TODO
+ * When this program is run, it opens a Java Swing panel, in which a user can
+ * use the buttons in the top left to check what their compression would compress
+ * to, compress a file using Huffman style compression, or uncompress a file that
+ * was previously compressed in the Huffman style. 
+ * 
+ * The options tab allows a user to decide weather or not it will force compression
+ * even if compressing does more harm than good. This setting is on by default
+ * 
+ * The Header format tab allows different formats of Huffman compression. By default
+ * it is set to Count format, however in every single possible scenario, tree format
+ * is more efficient.
  */
 public class Huff {
 
